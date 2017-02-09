@@ -1,0 +1,22 @@
+"""
+Settings for Jungle World 2 Epub
+
+Adapt and copy this file to settings.py.
+"""
+
+# Your username to access all current stories (optional)
+#USER = ''
+# Your password to access all current stories (optional)
+#PASSWORD = ''
+
+# Download location of the issue
+CACHEDIR = 'cache'
+
+# Base URL of the Jungle World server
+SERVER = 'https://jungle-world.com'
+
+# URI of the current issue's index page
+URI_INDEX = '/inhalt/'
+
+# URI of stories
+URI_ARTICLE = '/artikel/'
