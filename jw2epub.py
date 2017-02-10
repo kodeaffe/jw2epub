@@ -6,7 +6,6 @@ Download an issue of Jungle World and convert it to epub.
 """
 __docformat__ = "epytext en"
 import datetime
-import io
 import logging
 import os
 import re
@@ -27,16 +26,19 @@ logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
+
 class Settings(object):
+    """Settings for running jw2epub"""
     CACHEDIR = 'cache'
     SERVER = 'https://jungle-world.com'
     URI_INDEX = '/inhalt/'
     URI_ARTICLE = '/artikel/'
 
 
-class JW2EPUB (object):
-    """Download an issue of Jungle World + prepare for conversion to epub."""
-    def __init__ (self, settings, issue_no=None):
+
+class JW2EPUB(object):
+    """Download an issue of Jungle World + prepare for conversion to epub"""
+    def __init__(self, settings, issue_no=None):
         self.settings = settings
 
         if not os.path.exists(self.settings.CACHEDIR):
@@ -78,7 +80,7 @@ class JW2EPUB (object):
         @return: fetched HTML
         @rtype: str
         """
-        LOGGER.info('Fetch from file %s ...' % filename)
+        LOGGER.info('Fetch from file %s ...', filename)
         with open(filename, 'r', encoding='utf-8') as handle:
             html = handle.read()
         return html
@@ -92,11 +94,11 @@ class JW2EPUB (object):
         @return: fetched HTML
         @rtype: str
         """
-        LOGGER.info('Fetch from url %s ...' % url)
+        LOGGER.info('Fetch from url %s ...', url)
         try:
             return request.urlopen(url).read().decode()
         except client.BadStatusLine as err:
-            LOGGER.warn('Failed fetching: %s' % err)
+            LOGGER.warning('Failed fetching: %s', err)
             return None
 
 
@@ -117,13 +119,13 @@ class JW2EPUB (object):
         prefix = 'Skip HTML'
         skip_text = 'Diesen Artikel finden Sie bisher nur in der gedruckten Jungle World'
         if skip_text in html:
-            LOGGER.warn('%s: story not yet published.' % prefix)
+            LOGGER.warning('%s: story not yet published.', prefix)
             return True
 
         return False
 
 
-    def _fetch_html (self, uri, is_index=False):
+    def _fetch_html(self, uri, is_index=False):
         """Fetch HTML from either an existing cache dir or the internet.
 
         The index page is always fetched from the internet.
@@ -150,14 +152,14 @@ class JW2EPUB (object):
             if self._shall_skip_html(html):
                 return None
             else: # write to cache file
-                LOGGER.info('Write to cache file %s' % filename)
+                LOGGER.info('Write to cache file %s', filename)
                 with open(filename, 'w', encoding='utf-8') as handle:
                     handle.write(html)
 
         return html
 
 
-    def parse_index (self):
+    def parse_index(self):
         """Parse index file.
 
         Populates member variables issue_no, title, and uri_cover.
@@ -182,18 +184,24 @@ class JW2EPUB (object):
         self.issue_dir = os.path.join(cachedir, self.issue_no)
         if not os.path.exists(self.issue_dir):
             os.makedirs(self.issue_dir)
-        shutil.move(os.path.join(cachedir, 'index.html'),
-            os.path.join(self.issue_dir, 'index.html'))
+        shutil.move(
+            os.path.join(cachedir, 'index.html'),
+            os.path.join(self.issue_dir, 'index.html')
+        )
 
         img_src = dict(div.find('img').attrs)['src']
         self.uri_cover = img_src.replace('thumb_', '')
 
-        LOGGER.info('META info: title %s, issue_no %s uri_cover %s' % (
-            self.title, self.issue_no, self.uri_cover))
+        LOGGER.info(
+            'META info: title %s, issue_no %s uri_cover %s',
+            self.title,
+            self.issue_no,
+            self.uri_cover
+        )
         return soup
 
 
-    def get_story (self, uri):
+    def get_story(self, uri):
         """Get one story / article from given URI.
 
         @param uri: URI of story
@@ -240,7 +248,7 @@ class JW2EPUB (object):
             return None
 
 
-    def get_stories (self, soup):
+    def get_stories(self, soup):
         """Get all stories of current issue.
 
         @param soup: soup of index page to check for links to stories
@@ -253,7 +261,7 @@ class JW2EPUB (object):
         stories = []
         parsed = []
 
-        LOGGER.info('Get stories...')
+        LOGGER.info('Get stories ...')
         for anchor in soup.findAll('a', attrs={'href':regex}):
             if first:
                 first = False
@@ -273,16 +281,18 @@ class JW2EPUB (object):
         return stories
 
 
-    def download_cover (self):
+    def download_cover(self):
         """Download the cover image."""
-        filename = os.path.join(self.issue_dir,
-            os.path.basename(self.uri_cover))
+        filename = os.path.join(
+            self.issue_dir,
+            os.path.basename(self.uri_cover)
+        )
         LOGGER.info('Download cover image ...')
         request.urlretrieve(self.settings.SERVER + self.uri_cover, filename)
         return filename
 
 
-    def make_book (self, stories):
+    def make_book(self, stories):
         """Make an ebook out of the parsed stories.
 
         @param stories: stories of this issue
@@ -311,7 +321,7 @@ class JW2EPUB (object):
         book.cover_image = 'cover.png'
 
         for story in stories:
-            LOGGER.info('Add story {} ...'.format(story['title']))
+            LOGGER.info('Add story %s ...', story['title'])
             page = os.path.basename(story['uri'])
             book.files[page] = File(story['html'].encode('utf-8'))
             book.spine.append(Joint(page))
@@ -320,14 +330,15 @@ class JW2EPUB (object):
         return book
 
 
-    def run (self):
+    def run(self):
         """Run this method when using this class."""
         index = self.parse_index()
         stories = self.get_stories(index)
         book = self.make_book(stories)
         filename_book = 'JW-{}.epub'.format(self.issue_no)
-        LOGGER.info('Write to {}'.format(filename_book))
+        LOGGER.info('Write to %s', filename_book)
         book.write(filename_book)
+
 
 
 if __name__ == "__main__":
