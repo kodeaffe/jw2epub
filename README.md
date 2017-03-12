@@ -22,7 +22,7 @@ Documentation
 
 If you want to generate documentation, you need to install sphinx and run make:
 
-	$ pip install Sphinx autodoc
+	$ pip install Sphinx
 	$ cd docs/ && make html
 
 Entry point for the generated documentation is at `docs/_build/html/index.html`
