@@ -3,8 +3,10 @@
 """Jungle World 2 EPUB
 
 Download an issue of Jungle World and convert it to epub.
+
+See https://jungle-world.com
 """
-__docformat__ = "epytext en"
+
 import datetime
 import logging
 import os
@@ -75,10 +77,10 @@ class JW2EPUB(object):
     def _fetch_html_file(self, filename):
         """Fetch HTML from cached file.
 
-        @param filename: name of file to load from
-        @type filename: str
-        @return: fetched HTML
-        @rtype: str
+        :param filename: name of file to load from
+        :type filename: str
+        :return: fetched HTML
+        :rtype: str
         """
         LOGGER.info('Fetch from file %s ...', filename)
         with open(filename, 'r', encoding='utf-8') as handle:
@@ -89,10 +91,10 @@ class JW2EPUB(object):
     def _fetch_html_url(self, url):
         """Fetch HTML from live URL.
 
-        @param url: url to load from
-        @type url: str
-        @return: fetched HTML
-        @rtype: str
+        :param url: url to load from
+        :type url: str
+        :return: fetched HTML
+        :rtype: str
         """
         LOGGER.info('Fetch from url %s ...', url)
         try:
@@ -108,10 +110,10 @@ class JW2EPUB(object):
         - None
         - story not published yet
 
-        @param html: HTML checked to be skipped
-        @type html: str
-        @return: if story shall be skipped
-        @rtype: bool
+        :param html: HTML checked to be skipped
+        :type html: str
+        :return: if story shall be skipped
+        :rtype: bool
         """
         if not html:
             return True
@@ -130,12 +132,12 @@ class JW2EPUB(object):
 
         The index page is always fetched from the internet.
 
-        @param uri: URI to fetch
-        @type uri: str
-        @param is_index: if uri is the index page
-        @type is_index: bool
-        @return: fetched HTML or None
-        @rtype: str
+        :param uri: URI to fetch
+        :type uri: str
+        :param is_index: if uri is the index page
+        :type is_index: bool
+        :return: fetched HTML or None
+        :rtype: str
         """
         cachedir = self.settings.CACHEDIR
         if is_index:
@@ -166,8 +168,8 @@ class JW2EPUB(object):
         Copies index file to issue dir.
         Return index soup.
 
-        @return: soup of the index file
-        @rtype: BeautifulSoup
+        :return: soup of the index file
+        :rtype: BeautifulSoup
         """
         cachedir = self.settings.CACHEDIR
         index = self._fetch_html(self.uri_index, True)
@@ -204,10 +206,10 @@ class JW2EPUB(object):
     def get_story(self, uri):
         """Get one story / article from given URI.
 
-        @param uri: URI of story
-        @type uri: str
-        @return: story
-        @rtype: {'uri': str, 'head': str, 'html': str}
+        :param uri: URI of story
+        :type uri: str
+        :return: story
+        :rtype: Dict(str, str)
         """
         # possibly links to other issues
         if not uri.endswith('.html'):
@@ -251,10 +253,10 @@ class JW2EPUB(object):
     def get_stories(self, soup):
         """Get all stories of current issue.
 
-        @param soup: soup of index page to check for links to stories
-        @type soup: BeautifulSoup
-        @return: all stories of current issue.
-        @rtype: []
+        :param soup: soup of index page to check for links to stories
+        :type soup: BeautifulSoup
+        :return: all stories of current issue.
+        :rtype: List(Dict(str, str))
         """
         regex = re.compile('/artikel')
         first = True
@@ -295,11 +297,10 @@ class JW2EPUB(object):
     def make_book(self, stories):
         """Make an ebook out of the parsed stories.
 
-        @param stories: stories of this issue
-        @type stories: as returned by get_stories
-        @return: resulting epub book
-        @rtype: Epub3
-
+        :param stories: stories of this issue
+        :type stories: as returned by get_stories
+        :return: resulting epub book
+        :rtype: Epub3
         """
         LOGGER.info('Make ebook ...')
         book = Epub3()
