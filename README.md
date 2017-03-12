@@ -17,6 +17,15 @@ Install
 	$ pip install -r requirements.txt
 
 
+Documentation
+=============
+
+If you want to generate documentation, you need to install sphinx and run make:
+
+	$ pip install Sphinx autodoc
+	$ cd docs/ && make html
+
+Entry point for the generated documentation is at `docs/_build/html/index.html`
 
 
 Usage
