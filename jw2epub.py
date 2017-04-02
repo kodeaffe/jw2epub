@@ -20,7 +20,7 @@ from epubaker.metas import (
 from epubaker.tools import w3c_utc_date
 
 
-VERSION = '0.1'
+VERSION = '0.2'
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
