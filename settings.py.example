@@ -13,10 +13,7 @@ Adapt and copy this file to settings.py.
 CACHEDIR = 'cache'
 
 # Base URL of the Jungle World server
-SERVER = 'https://jungle-world.com'
+SERVER = 'https://jungle.world'
 
-# URI of the current issue's index page
-URI_INDEX = '/inhalt/'
-
-# URI of stories
-URI_ARTICLE = '/artikel/'
+# Base URI of an issue index
+URI_INDEX = '/inhalt'
