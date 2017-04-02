@@ -61,6 +61,9 @@ class JW2EPUB(object):
         try:
             url = self.settings.SERVER
             LOGGER.info('Find current issue no from %s ...', url)
+            handler = request.HTTPSHandler(debuglevel=1)
+            opener = request.build_opener(handler)
+            request.install_opener(opener)
             html = request.urlopen(url).read().decode()
             soup = BeautifulSoup(html, 'html.parser')
             issue_no = soup.find(attrs={'class': 'view-mode-teaser'}).\
