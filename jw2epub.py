@@ -112,28 +112,6 @@ class JW2EPUB(object):
             LOGGER.warning('Failed fetching: %s', err)
             return None
 
-    def _shall_skip_html(self, html):
-        """Skip HTML (story) under certain conditions:
-
-        - None
-        - story not published yet
-
-        :param html: HTML checked to be skipped
-        :type html: str
-        :return: if story shall be skipped
-        :rtype: bool
-        """
-        if not html:
-            return True
-
-        prefix = 'Skip HTML'
-        skip_text = 'Diesen Artikel finden Sie bisher nur in der gedruckten Jungle World'
-        if skip_text in html:
-            LOGGER.warning('%s: story not yet published.', prefix)
-            return True
-
-        return False
-
     def _fetch_html(self, uri, is_index=False):
         """Fetch HTML from either an existing cache dir or the internet.
 
@@ -158,12 +136,9 @@ class JW2EPUB(object):
             html = self._fetch_html_file(filename)
         else:
             html = self._fetch_html_url(self.settings.SERVER + uri)
-            if self._shall_skip_html(html):
-                return None
-            else:  # write to cache file
-                LOGGER.info('Write to cache file %s', filename)
-                with open(filename, 'w', encoding='utf-8') as handle:
-                    handle.write(html)
+            LOGGER.info('Write to cache file %s', filename)
+            with open(filename, 'w', encoding='utf-8') as handle:
+                handle.write(html)
 
         return html
 
