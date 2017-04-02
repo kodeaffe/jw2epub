@@ -7,10 +7,8 @@ Download an issue of Jungle World and convert it to epub.
 See https://jungle.world
 """
 
-import datetime
 import logging
 import os
-import re
 import shutil
 import sys
 from urllib import request
@@ -54,7 +52,6 @@ class JW2EPUB(object):
         self.title = 'Issue {} of Jungle World'.format(self.issue_no)
         self.uri_cover = ''
 
-        
         # Not sure if this actually works, do not have a working login atm
         if hasattr(self.settings, 'USER') and self.settings.USER and\
             hasattr(self.settings, 'PASSWORD') and self.settings.PASSWORD:
@@ -254,7 +251,7 @@ class JW2EPUB(object):
         if body:
             body.attrs['style'] = margin
 
-        html =' <html><body>{}{}{}{}{}</body></html'.format(
+        html = ' <html><body>{}{}{}{}{}</body></html'.format(
             date, title, lead, author, body)
         output = {
             'uri': uri,
@@ -350,9 +347,8 @@ class JW2EPUB(object):
 
 
 
-if __name__ == "__main__":
-    print('.oOo. Welcome to JW2EPUB version %s .oOo.' % VERSION)
-
+def main():
+    """Main function to setup settings and issue number."""
     if len(sys.argv) > 1:
         issue_no = sys.argv[1]
     else:
@@ -363,3 +359,9 @@ if __name__ == "__main__":
     except ImportError:
         settings = Settings()
     JW2EPUB(settings, issue_no).run()
+
+
+
+if __name__ == "__main__":
+    print('.oOo. Welcome to JW2EPUB version %s .oOo.' % VERSION)
+    main()
