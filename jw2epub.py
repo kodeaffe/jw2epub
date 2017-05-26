@@ -20,7 +20,7 @@ from epubaker.metas import (
 from epubaker.tools import w3c_utc_date
 
 
-VERSION = '0.2'
+VERSION = '0.3'
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ class JW2EPUB(object):
             LOGGER.info('Find current issue no from %s ...', url)
             html = request.urlopen(url).read().decode()
             soup = BeautifulSoup(html, 'html.parser')
-            issue_no = soup.find(attrs={'class': 'view-mode-teaser'}).\
+            issue_no = soup.find(class_='view-mode-teaser').\
                 find('time').\
                 text
             return issue_no
@@ -157,12 +157,12 @@ class JW2EPUB(object):
         soup = BeautifulSoup(index, 'html.parser')
 
         self.uri_cover = soup.\
-            find('div', attrs={'class': 'field-name-field-ref-bilder'}).\
+            find('div', class_='field-name-field-ref-bilder').\
             find('img').\
             attrs['src'].\
             split('?')[0]  # remove token
         self.title = soup.find('title').text.split('-')[1].strip()
-        self.issue_no = soup.find('ul', attrs={'class': 'breadcrumb'}).\
+        self.issue_no = soup.find('ul', class_='breadcrumb').\
             find('time').\
             text
 
@@ -193,32 +193,32 @@ class JW2EPUB(object):
 
         margin = 'margin-top: 0.5em;'
         soup = BeautifulSoup(html, 'html.parser')
-        story = soup.find(attrs={'class': 'view-mode-full'})
+        story = soup.find(class_='view-mode-full')
 
-        date = story.find(attrs={'id': 'ausgabe-wrapper'}).find('span')
+        date = story.find(id='ausgabe-wrapper').find('span')
         if date:
             date = str(date).replace('span', 'div')
 
-        title = story.find(attrs={'class': 'page-title'})
+        title = story.find(class_='page-title')
         if title:
             # add class chapter for e.g. automatic calibre TOC generation
             title.attrs['class'].append('chapter')
             title.attrs['style'] = margin
 
-        lead = story.find(attrs={'class': 'lead'})
+        lead = story.find(class_='lead')
         if lead:
             lead.attrs['style'] = '{}{}'.format(margin, 'font-weight: bold;')
 
-        author = story.find(attrs={'class': 'autor-wrapper'})
+        author = story.find(class_='autor')
         if author:
             author.attrs['style'] = margin
 
-        body = story.find(attrs={'class': 'field-name-body'})
+        body = story.find(class_='group-body').find(class_='ft')
         if body:
             body.attrs['style'] = margin
 
-        html = ' <html><body>{}{}{}{}{}</body></html'.format(
-            date, title, lead, author, body)
+        html = '<html><body>{}{}{}{}{}</body></html'.format(
+            date, author, title, lead, body)
         output = {
             'uri': uri,
             'title': title.text,
@@ -238,7 +238,7 @@ class JW2EPUB(object):
         parsed = []
 
         LOGGER.info('Get stories ...')
-        for story in soup.findAll('h4', attrs={'class': 'public'}):
+        for story in soup.findAll('h4', class_='public'):
             try:
                 uri = story.find('a').attrs['href']
             except IndexError:
