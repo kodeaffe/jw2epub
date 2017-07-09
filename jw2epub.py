@@ -20,7 +20,7 @@ from epubaker.metas import (
 from epubaker.tools import w3c_utc_date
 
 
-VERSION = '0.3'
+VERSION = '0.4'
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
@@ -193,9 +193,12 @@ class JW2EPUB(object):
 
         margin = 'margin-top: 0.5em;'
         soup = BeautifulSoup(html, 'html.parser')
-        story = soup.find(class_='view-mode-full')
+        story = soup.find(id='article')
+        # sometimes the article is found elsewhere
+        if not story:
+            story = soup.find(class_='view-mode-full')
 
-        date = story.find(id='ausgabe-wrapper').find('span')
+        date = story.find('span', class_='date')
         if date:
             date = str(date).replace('span', 'div')
 
@@ -213,7 +216,11 @@ class JW2EPUB(object):
         if author:
             author.attrs['style'] = margin
 
-        body = story.find(class_='group-body').find(class_='ft')
+        body = story.find(class_='body-wrapper')
+        # sometimes the body is found elsewhere
+        if not body:
+            body = story.find(class_='group-body')
+        body = body.find(class_='ft')
         if body:
             body.attrs['style'] = margin
 
